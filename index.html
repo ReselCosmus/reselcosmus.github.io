@@ -1,0 +1,354 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<title>PDA Alt-GeoRP Intelligence</title>
+
+<style>
+
+body{
+background:#0a0f14;
+color:#00ff9c;
+font-family:monospace;
+margin:0;
+overflow:hidden;
+}
+
+/* BOOT */
+
+#boot{
+position:fixed;
+width:100%;
+height:100%;
+background:black;
+display:flex;
+flex-direction:column;
+justify-content:center;
+align-items:center;
+text-align:center;
+font-size:18px;
+padding:20px;
+}
+
+/* TITULO */
+
+.bootTitle{
+font-size:22px;
+margin-bottom:25px;
+color:#00ff9c;
+}
+
+/* ICONO MILITAR */
+
+.bootIcon{
+font-size:80px;
+margin-bottom:25px;
+animation:militaryBlink 1s infinite;
+}
+
+@keyframes militaryBlink{
+0%{opacity:1; transform:scale(1);}
+50%{opacity:0.3; transform:scale(1.2);}
+100%{opacity:1; transform:scale(1);}
+}
+
+#boot span{
+animation:blink 1s infinite;
+}
+
+@keyframes blink{
+0%{opacity:1}
+50%{opacity:0}
+100%{opacity:1}
+}
+
+/* PDA */
+
+#pda{
+display:none;
+height:100vh;
+display:flex;
+flex-direction:column;
+}
+
+/* HEADER */
+
+header{
+background:#02060a;
+padding:10px;
+border-bottom:2px solid #00ff9c;
+display:flex;
+flex-direction:column;
+gap:6px;
+}
+
+.systemTitle{
+font-size:16px;
+}
+
+.tabs{
+display:flex;
+gap:10px;
+flex-wrap:wrap;
+}
+
+.tab{
+cursor:pointer;
+padding:5px 10px;
+border:1px solid #00ff9c;
+}
+
+.tab:hover{
+background:#00ff9c;
+color:black;
+}
+
+/* NEWS */
+
+#news{
+flex:1;
+overflow:auto;
+padding:15px;
+}
+
+.newsCard{
+border:1px solid #00ff9c;
+margin-bottom:15px;
+padding:10px;
+background:#02060a;
+}
+
+.newsCard img{
+max-width:100%;
+margin-top:5px;
+}
+
+.newsCard video{
+max-width:100%;
+margin-top:5px;
+}
+
+.flag{
+width:30px;
+vertical-align:middle;
+margin-right:5px;
+}
+
+/* EDITOR */
+
+#editor{
+background:#02060a;
+padding:10px;
+border-top:2px solid #00ff9c;
+display:flex;
+flex-wrap:wrap;
+gap:5px;
+}
+
+input, textarea, select{
+background:black;
+color:#00ff9c;
+border:1px solid #00ff9c;
+padding:5px;
+}
+
+textarea{
+width:100%;
+height:60px;
+}
+
+button{
+background:#00ff9c;
+border:none;
+padding:6px 12px;
+cursor:pointer;
+font-weight:bold;
+}
+
+button:hover{
+background:white;
+}
+
+</style>
+</head>
+
+<body>
+
+<!-- BOOT SCREEN -->
+
+<div id="boot">
+
+<div class="bootTitle">
+[༄𝐃𝐀𝐯𝐄❦] | 𝐀 𝐖𝐨𝐫𝐥𝐝 𝐨𝐟 𝐇𝐚𝐧𝐬𝐚 | 𝐀𝐥𝐭-𝐆𝐞𝐨𝐑𝐏
+</div>
+
+<div class="bootIcon">✪</div>
+
+<div>ACCESSING GLOBAL INTELLIGENCE NETWORK...</div>
+<div>LOADING MILITARY DATA • POLITICAL EVENTS • STRATEGIC REPORTS<span>|</span></div>
+
+</div>
+
+<!-- PDA -->
+
+<div id="pda">
+
+<header>
+
+<div class="systemTitle">
+GLOBAL INTELLIGENCE FEED — Alt-GeoRP Strategic Network
+</div>
+
+<div class="tabs">
+
+<div class="tab" onclick="setContinent('america')">America</div>
+<div class="tab" onclick="setContinent('europa')">Europa</div>
+<div class="tab" onclick="setContinent('asia')">Asia</div>
+<div class="tab" onclick="setContinent('africa')">Africa</div>
+<div class="tab" onclick="setContinent('oceania')">Oceania</div>
+
+</div>
+
+</header>
+
+<div id="news"></div>
+
+<!-- EDITOR -->
+
+<div id="editor">
+
+<select id="continent">
+<option value="america">America</option>
+<option value="europa">Europa</option>
+<option value="asia">Asia</option>
+<option value="africa">Africa</option>
+<option value="oceania">Oceania</option>
+</select>
+
+<input id="title" placeholder="Titulo del evento">
+
+<input id="date" type="date">
+
+<input id="country" placeholder="Pais">
+
+<input id="flag" placeholder="URL bandera">
+
+<input id="media" placeholder="URL imagen o video">
+
+<textarea id="text" placeholder="Descripcion del evento militar o politico"></textarea>
+
+<button onclick="addNews()">Agregar Evento</button>
+
+</div>
+
+</div>
+
+<script>
+
+/* BOOT */
+
+setTimeout(()=>{
+document.getElementById("boot").style.display="none"
+document.getElementById("pda").style.display="flex"
+loadNews()
+},4000)
+
+
+let current="america"
+
+
+function setContinent(c){
+current=c
+render()
+}
+
+/* STORAGE */
+
+function loadNews(){
+
+if(!localStorage.news){
+localStorage.news=JSON.stringify([])
+}
+
+render()
+
+}
+
+function addNews(){
+
+let news=JSON.parse(localStorage.news)
+
+let item={
+
+continent:document.getElementById("continent").value,
+title:document.getElementById("title").value,
+date:document.getElementById("date").value,
+country:document.getElementById("country").value,
+flag:document.getElementById("flag").value,
+media:document.getElementById("media").value,
+text:document.getElementById("text").value
+
+}
+
+news.push(item)
+
+localStorage.news=JSON.stringify(news)
+
+render()
+
+}
+
+/* RENDER */
+
+function render(){
+
+let container=document.getElementById("news")
+
+let news=JSON.parse(localStorage.news)
+
+container.innerHTML=""
+
+news
+.filter(n=>n.continent==current)
+.reverse()
+.forEach(n=>{
+
+let media=""
+
+if(n.media){
+
+if(n.media.includes("mp4")||n.media.includes("webm")){
+media=`<video controls src="${n.media}"></video>`
+}else{
+media=`<img src="${n.media}">`
+}
+
+}
+
+container.innerHTML+=`
+
+<div class="newsCard">
+
+<h3>
+<img class="flag" src="${n.flag}">
+${n.country} — ${n.title}
+</h3>
+
+<small>${n.date}</small>
+
+<p>${n.text}</p>
+
+${media}
+
+</div>
+
+`
+
+})
+
+}
+
+</script>
+
+</body>
+</html>
