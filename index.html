@@ -1,352 +1,227 @@
 <!DOCTYPE html>
-<html lang="es">
+<html>
+
 <head>
+
 <meta charset="UTF-8">
-<title>PDA Alt-GeoRP Intelligence</title>
+<title>[༄𝐃𝐀𝐯𝐄❦] | A World of Hansa | Alt-GeoRP PDA</title>
 
 <style>
 
 body{
-background:#0a0f14;
+background:#0b0f0e;
 color:#00ff9c;
 font-family:monospace;
 margin:0;
-overflow:hidden;
 }
-
-/* BOOT */
-
-#boot{
-position:fixed;
-width:100%;
-height:100%;
-background:black;
-display:flex;
-flex-direction:column;
-justify-content:center;
-align-items:center;
-text-align:center;
-font-size:18px;
-padding:20px;
-}
-
-/* TITULO */
-
-.bootTitle{
-font-size:22px;
-margin-bottom:25px;
-color:#00ff9c;
-}
-
-/* ICONO MILITAR */
-
-.bootIcon{
-font-size:80px;
-margin-bottom:25px;
-animation:militaryBlink 1s infinite;
-}
-
-@keyframes militaryBlink{
-0%{opacity:1; transform:scale(1);}
-50%{opacity:0.3; transform:scale(1.2);}
-100%{opacity:1; transform:scale(1);}
-}
-
-#boot span{
-animation:blink 1s infinite;
-}
-
-@keyframes blink{
-0%{opacity:1}
-50%{opacity:0}
-100%{opacity:1}
-}
-
-/* PDA */
-
-#pda{
-display:none;
-height:100vh;
-display:flex;
-flex-direction:column;
-}
-
-/* HEADER */
 
 header{
-background:#02060a;
-padding:10px;
-border-bottom:2px solid #00ff9c;
-display:flex;
-flex-direction:column;
-gap:6px;
-}
-
-.systemTitle{
-font-size:16px;
-}
-
-.tabs{
-display:flex;
-gap:10px;
-flex-wrap:wrap;
-}
-
-.tab{
-cursor:pointer;
-padding:5px 10px;
-border:1px solid #00ff9c;
-}
-
-.tab:hover{
-background:#00ff9c;
-color:black;
-}
-
-/* NEWS */
-
-#news{
-flex:1;
-overflow:auto;
+background:#021d16;
 padding:15px;
+text-align:center;
+border-bottom:2px solid #00ff9c;
 }
 
-.newsCard{
-border:1px solid #00ff9c;
-margin-bottom:15px;
-padding:10px;
-background:#02060a;
+header h1{
+margin:0;
+font-size:18px;
 }
 
-.newsCard img{
-max-width:100%;
-margin-top:5px;
-}
-
-.newsCard video{
-max-width:100%;
-margin-top:5px;
-}
-
-.flag{
-width:30px;
-vertical-align:middle;
-margin-right:5px;
-}
-
-/* EDITOR */
-
-#editor{
-background:#02060a;
-padding:10px;
-border-top:2px solid #00ff9c;
+.container{
 display:flex;
-flex-wrap:wrap;
-gap:5px;
+height:90vh;
 }
 
-input, textarea, select{
+.sidebar{
+width:250px;
+background:#031b15;
+border-right:1px solid #00ff9c;
+padding:10px;
+}
+
+.sidebar button{
+width:100%;
+margin-bottom:10px;
+padding:10px;
 background:black;
 color:#00ff9c;
 border:1px solid #00ff9c;
-padding:5px;
+cursor:pointer;
+}
+
+.sidebar button:hover{
+background:#002b22;
+}
+
+.main{
+flex:1;
+padding:20px;
+overflow:auto;
 }
 
 textarea{
 width:100%;
-height:60px;
+height:120px;
+background:black;
+color:#00ff9c;
+border:1px solid #00ff9c;
+padding:10px;
+font-family:monospace;
 }
 
-button{
+button.enviar{
+margin-top:10px;
+padding:10px;
 background:#00ff9c;
 border:none;
-padding:6px 12px;
-cursor:pointer;
+color:black;
 font-weight:bold;
+cursor:pointer;
 }
 
-button:hover{
-background:white;
+button.enviar:hover{
+background:#00d885;
+}
+
+.log{
+margin-top:20px;
+}
+
+.entry{
+border-bottom:1px solid #00ff9c33;
+padding:10px;
+margin-bottom:10px;
+}
+
+.time{
+font-size:12px;
+color:#00ffaa88;
 }
 
 </style>
+
 </head>
 
 <body>
 
-<!-- BOOT SCREEN -->
-
-<div id="boot">
-
-<div class="bootTitle">
-[༄𝐃𝐀𝐯𝐄❦] | 𝐀 𝐖𝐨𝐫𝐥𝐝 𝐨𝐟 𝐇𝐚𝐧𝐬𝐚 | 𝐀𝐥𝐭-𝐆𝐞𝐨𝐑𝐏
-</div>
-
-<div class="bootIcon">✪</div>
-
-<div>ACCESSING GLOBAL INTELLIGENCE NETWORK...</div>
-<div>LOADING MILITARY DATA • POLITICAL EVENTS • STRATEGIC REPORTS<span>|</span></div>
-
-</div>
-
-<!-- PDA -->
-
-<div id="pda">
-
 <header>
-
-<div class="systemTitle">
-GLOBAL INTELLIGENCE FEED — Alt-GeoRP Strategic Network
-</div>
-
-<div class="tabs">
-
-<div class="tab" onclick="setContinent('america')">America</div>
-<div class="tab" onclick="setContinent('europa')">Europa</div>
-<div class="tab" onclick="setContinent('asia')">Asia</div>
-<div class="tab" onclick="setContinent('africa')">Africa</div>
-<div class="tab" onclick="setContinent('oceania')">Oceania</div>
-
-</div>
-
+<h1>[༄𝐃𝐀𝐯𝐄❦] | A World of Hansa | Alt-GeoRP</h1>
+Sistema PDA | Inteligencia Global
 </header>
 
-<div id="news"></div>
+<div class="container">
 
-<!-- EDITOR -->
+<div class="sidebar">
 
-<div id="editor">
+<button onclick="categoria('militar')">Actualizaciones Militares</button>
 
-<select id="continent">
-<option value="america">America</option>
-<option value="europa">Europa</option>
-<option value="asia">Asia</option>
-<option value="africa">Africa</option>
-<option value="oceania">Oceania</option>
-</select>
+<button onclick="categoria('politica')">Eventos Políticos</button>
 
-<input id="title" placeholder="Titulo del evento">
+<button onclick="categoria('inteligencia')">Reportes de Inteligencia</button>
 
-<input id="date" type="date">
+<button onclick="categoria('economia')">Situación Económica</button>
 
-<input id="country" placeholder="Pais">
+</div>
 
-<input id="flag" placeholder="URL bandera">
+<div class="main">
 
-<input id="media" placeholder="URL imagen o video">
+<h2 id="titulo">Registro Militar</h2>
 
-<textarea id="text" placeholder="Descripcion del evento militar o politico"></textarea>
+<textarea id="texto" placeholder="Escribe un informe..."></textarea>
 
-<button onclick="addNews()">Agregar Evento</button>
+<button class="enviar" onclick="enviar()">SUBIR INFORME</button>
+
+<div class="log" id="log"></div>
 
 </div>
 
 </div>
 
-<script>
 
-/* BOOT */
+<script type="module">
 
-setTimeout(()=>{
-document.getElementById("boot").style.display="none"
-document.getElementById("pda").style.display="flex"
-loadNews()
-},4000)
+import { initializeApp } from "https://www.gstatic.com/firebasejs/12.10.0/firebase-app.js";
+import { getAnalytics } from "https://www.gstatic.com/firebasejs/12.10.0/firebase-analytics.js";
+import { getDatabase, ref, push, onValue } from "https://www.gstatic.com/firebasejs/12.10.0/firebase-database.js";
 
 
-let current="america"
+const firebaseConfig = {
+apiKey: "AIzaSyCYfCPTM73h65iJ9HRW94rbRHYzwuqyXS0",
+authDomain: "world-of-hansa.firebaseapp.com",
+databaseURL: "https://world-of-hansa-default-rtdb.firebaseio.com",
+projectId: "world-of-hansa",
+storageBucket: "world-of-hansa.firebasestorage.app",
+messagingSenderId: "834898494569",
+appId: "1:834898494569:web:63f0869993e73bb01c4ef8",
+measurementId: "G-C0LNTV3RQZ"
+};
 
+const app = initializeApp(firebaseConfig);
+const analytics = getAnalytics(app);
+const db = getDatabase(app);
 
-function setContinent(c){
-current=c
-render()
-}
+let categoriaActual = "militar";
 
-/* STORAGE */
+window.categoria = function(c){
 
-function loadNews(){
+categoriaActual = c;
 
-if(!localStorage.news){
-localStorage.news=JSON.stringify([])
-}
+document.getElementById("titulo").innerText = "Registro - " + c;
 
-render()
-
-}
-
-function addNews(){
-
-let news=JSON.parse(localStorage.news)
-
-let item={
-
-continent:document.getElementById("continent").value,
-title:document.getElementById("title").value,
-date:document.getElementById("date").value,
-country:document.getElementById("country").value,
-flag:document.getElementById("flag").value,
-media:document.getElementById("media").value,
-text:document.getElementById("text").value
+cargar();
 
 }
 
-news.push(item)
+window.enviar = function(){
 
-localStorage.news=JSON.stringify(news)
+const texto = document.getElementById("texto").value;
 
-render()
+if(texto.trim()=="") return;
 
-}
+push(ref(db,"pda/"+categoriaActual),{
 
-/* RENDER */
+texto:texto,
+fecha:new Date().toLocaleString()
 
-function render(){
+});
 
-let container=document.getElementById("news")
-
-let news=JSON.parse(localStorage.news)
-
-container.innerHTML=""
-
-news
-.filter(n=>n.continent==current)
-.reverse()
-.forEach(n=>{
-
-let media=""
-
-if(n.media){
-
-if(n.media.includes("mp4")||n.media.includes("webm")){
-media=`<video controls src="${n.media}"></video>`
-}else{
-media=`<img src="${n.media}">`
-}
+document.getElementById("texto").value="";
 
 }
 
-container.innerHTML+=`
+function cargar(){
 
-<div class="newsCard">
+const log = document.getElementById("log");
 
-<h3>
-<img class="flag" src="${n.flag}">
-${n.country} — ${n.title}
-</h3>
+onValue(ref(db,"pda/"+categoriaActual),(snapshot)=>{
 
-<small>${n.date}</small>
+log.innerHTML="";
 
-<p>${n.text}</p>
+snapshot.forEach((child)=>{
 
-${media}
+const data = child.val();
 
-</div>
+const div = document.createElement("div");
 
-`
+div.className="entry";
 
-})
+div.innerHTML=`
+
+<div>${data.texto}</div>
+
+<div class="time">${data.fecha}</div>
+
+`;
+
+log.prepend(div);
+
+});
+
+});
 
 }
+
+cargar();
 
 </script>
 
