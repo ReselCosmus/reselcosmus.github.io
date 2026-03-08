@@ -85,7 +85,7 @@ margin-bottom:20px;
 }
 
 .entry img{
-max-width:300px;
+max-width:350px;
 margin-top:10px;
 border:1px solid #00ff9c;
 }
@@ -103,7 +103,7 @@ color:#00ffaa88;
 
 <header>
 <h2>[༄𝐃𝐀𝐯𝐄❦] | A World of Hansa | Alt-GeoRP</h2>
-Sistema PDA | Inteligencia Global
+Sistema PDA | Red de Inteligencia
 </header>
 
 <div class="container">
@@ -133,8 +133,8 @@ Sistema PDA | Inteligencia Global
 <label>Información</label>
 <textarea id="texto" placeholder="Escribe el informe..."></textarea>
 
-<label>Imagen</label>
-<input type="file" id="imagen">
+<label>Link de Imagen</label>
+<input id="imagen" placeholder="https://...">
 
 <button class="enviar" onclick="enviar()">SUBIR INFORME</button>
 
@@ -149,7 +149,6 @@ Sistema PDA | Inteligencia Global
 
 import { initializeApp } from "https://www.gstatic.com/firebasejs/12.10.0/firebase-app.js";
 import { getDatabase, ref, push, onValue } from "https://www.gstatic.com/firebasejs/12.10.0/firebase-database.js";
-import { getStorage, ref as refStorage, uploadBytes, getDownloadURL } from "https://www.gstatic.com/firebasejs/12.10.0/firebase-storage.js";
 
 const firebaseConfig = {
 
@@ -166,7 +165,6 @@ measurementId: "G-C0LNTV3RQZ"
 
 const app = initializeApp(firebaseConfig);
 const db = getDatabase(app);
-const storage = getStorage(app);
 
 let categoriaActual = "militar";
 
@@ -180,25 +178,15 @@ cargar();
 
 }
 
-window.enviar = async function(){
+window.enviar = function(){
 
 const bandera = document.getElementById("bandera").value;
 const titulo = document.getElementById("tituloInput").value;
 const fecha = document.getElementById("fecha").value;
 const texto = document.getElementById("texto").value;
-const imagen = document.getElementById("imagen").files[0];
+const imagen = document.getElementById("imagen").value;
 
-let imagenURL = "";
-
-if(imagen){
-
-const storageRef = refStorage(storage,"imagenes/"+Date.now()+imagen.name);
-
-await uploadBytes(storageRef,imagen);
-
-imagenURL = await getDownloadURL(storageRef);
-
-}
+if(titulo.trim()=="" || texto.trim()=="") return;
 
 push(ref(db,"pda/"+categoriaActual),{
 
@@ -206,7 +194,7 @@ bandera,
 titulo,
 fecha,
 texto,
-imagen:imagenURL
+imagen
 
 });
 
@@ -236,9 +224,9 @@ div.className="entry";
 
 div.innerHTML = `
 
-<h3>${data.bandera} ${data.titulo}</h3>
+<h3>${data.bandera || ""} ${data.titulo}</h3>
 
-<div class="time">${data.fecha}</div>
+<div class="time">${data.fecha || ""}</div>
 
 <p>${data.texto}</p>
 
