@@ -9,7 +9,7 @@
 <style>
 
 body{
-background:#0a0f0e;
+background:#0b0f0e;
 color:#00ff9c;
 font-family:monospace;
 margin:0;
@@ -36,16 +36,12 @@ padding:10px;
 
 .sidebar button{
 width:100%;
-padding:10px;
 margin-bottom:10px;
+padding:10px;
 background:black;
 color:#00ff9c;
 border:1px solid #00ff9c;
 cursor:pointer;
-}
-
-.sidebar button:hover{
-background:#002b22;
 }
 
 .main{
@@ -54,14 +50,18 @@ padding:20px;
 overflow:auto;
 }
 
-textarea{
+input, textarea{
 width:100%;
-height:120px;
 background:black;
 color:#00ff9c;
 border:1px solid #00ff9c;
-padding:10px;
+padding:8px;
+margin-top:5px;
 font-family:monospace;
+}
+
+textarea{
+height:120px;
 }
 
 button.enviar{
@@ -81,7 +81,13 @@ margin-top:20px;
 .entry{
 border-bottom:1px solid #00ff9c33;
 padding:10px;
-margin-bottom:10px;
+margin-bottom:20px;
+}
+
+.entry img{
+max-width:300px;
+margin-top:10px;
+border:1px solid #00ff9c;
 }
 
 .time{
@@ -97,15 +103,15 @@ color:#00ffaa88;
 
 <header>
 <h2>[༄𝐃𝐀𝐯𝐄❦] | A World of Hansa | Alt-GeoRP</h2>
-Sistema PDA — Red de Información Global
+Sistema PDA | Inteligencia Global
 </header>
 
 <div class="container">
 
 <div class="sidebar">
 
-<button onclick="categoria('militar')">Actualizaciones Militares</button>
-<button onclick="categoria('politica')">Eventos Políticos</button>
+<button onclick="categoria('militar')">Militar</button>
+<button onclick="categoria('politica')">Política</button>
 <button onclick="categoria('inteligencia')">Inteligencia</button>
 <button onclick="categoria('economia')">Economía</button>
 
@@ -113,11 +119,22 @@ Sistema PDA — Red de Información Global
 
 <div class="main">
 
-<h2 id="titulo">Registro Militar</h2>
+<h2 id="titulo">Registro</h2>
 
+<label>Bandera (emoji)</label>
+<input id="bandera" placeholder="Ej: 🇺🇸 🇷🇺 🇨🇳">
+
+<label>Título</label>
+<input id="tituloInput" placeholder="Título del informe">
+
+<label>Fecha</label>
+<input type="date" id="fecha">
+
+<label>Información</label>
 <textarea id="texto" placeholder="Escribe el informe..."></textarea>
 
-<br>
+<label>Imagen</label>
+<input type="file" id="imagen">
 
 <button class="enviar" onclick="enviar()">SUBIR INFORME</button>
 
@@ -132,8 +149,10 @@ Sistema PDA — Red de Información Global
 
 import { initializeApp } from "https://www.gstatic.com/firebasejs/12.10.0/firebase-app.js";
 import { getDatabase, ref, push, onValue } from "https://www.gstatic.com/firebasejs/12.10.0/firebase-database.js";
+import { getStorage, ref as refStorage, uploadBytes, getDownloadURL } from "https://www.gstatic.com/firebasejs/12.10.0/firebase-storage.js";
 
 const firebaseConfig = {
+
 apiKey: "AIzaSyCYfCPTM73h65iJ9HRW94rbRHYzwuqyXS0",
 authDomain: "world-of-hansa.firebaseapp.com",
 databaseURL: "https://world-of-hansa-default-rtdb.firebaseio.com",
@@ -142,10 +161,12 @@ storageBucket: "world-of-hansa.firebasestorage.app",
 messagingSenderId: "834898494569",
 appId: "1:834898494569:web:63f0869993e73bb01c4ef8",
 measurementId: "G-C0LNTV3RQZ"
+
 };
 
 const app = initializeApp(firebaseConfig);
 const db = getDatabase(app);
+const storage = getStorage(app);
 
 let categoriaActual = "militar";
 
@@ -159,20 +180,41 @@ cargar();
 
 }
 
-window.enviar = function(){
+window.enviar = async function(){
 
+const bandera = document.getElementById("bandera").value;
+const titulo = document.getElementById("tituloInput").value;
+const fecha = document.getElementById("fecha").value;
 const texto = document.getElementById("texto").value;
+const imagen = document.getElementById("imagen").files[0];
 
-if(texto.trim() === "") return;
+let imagenURL = "";
+
+if(imagen){
+
+const storageRef = refStorage(storage,"imagenes/"+Date.now()+imagen.name);
+
+await uploadBytes(storageRef,imagen);
+
+imagenURL = await getDownloadURL(storageRef);
+
+}
 
 push(ref(db,"pda/"+categoriaActual),{
 
-texto:texto,
-fecha:new Date().toLocaleString()
+bandera,
+titulo,
+fecha,
+texto,
+imagen:imagenURL
 
 });
 
+document.getElementById("bandera").value="";
+document.getElementById("tituloInput").value="";
+document.getElementById("fecha").value="";
 document.getElementById("texto").value="";
+document.getElementById("imagen").value="";
 
 }
 
@@ -193,8 +235,15 @@ const div = document.createElement("div");
 div.className="entry";
 
 div.innerHTML = `
-<div>${data.texto}</div>
+
+<h3>${data.bandera} ${data.titulo}</h3>
+
 <div class="time">${data.fecha}</div>
+
+<p>${data.texto}</p>
+
+${data.imagen ? `<img src="${data.imagen}">` : ""}
+
 `;
 
 log.prepend(div);
