@@ -15,6 +15,27 @@ font-family:monospace;
 margin:0;
 }
 
+/* pantalla de carga */
+
+#boot{
+position:fixed;
+width:100%;
+height:100%;
+background:black;
+color:#00ff9c;
+display:flex;
+align-items:center;
+justify-content:center;
+font-size:18px;
+z-index:9999;
+}
+
+/* PDA */
+
+#pda{
+display:none;
+}
+
 header{
 background:#021d16;
 padding:15px;
@@ -74,10 +95,6 @@ font-weight:bold;
 cursor:pointer;
 }
 
-.log{
-margin-top:20px;
-}
-
 .entry{
 border-bottom:1px solid #00ff9c33;
 padding:10px;
@@ -101,9 +118,20 @@ color:#00ffaa88;
 
 <body>
 
+<!-- pantalla de arranque -->
+
+<div id="boot">
+<span id="bootText"></span>
+</div>
+
+
+<!-- PDA -->
+
+<div id="pda">
+
 <header>
 <h2>[༄𝐃𝐀𝐯𝐄❦] | A World of Hansa | Alt-GeoRP</h2>
-Sistema PDA | Red de Inteligencia
+Sistema PDA | Red de Inteligencia Global
 </header>
 
 <div class="container">
@@ -122,23 +150,25 @@ Sistema PDA | Red de Inteligencia
 <h2 id="titulo">Registro</h2>
 
 <label>Bandera (emoji)</label>
-<input id="bandera" placeholder="Ej: 🇺🇸 🇷🇺 🇨🇳">
+<input id="bandera" placeholder="🇺🇸 🇷🇺 🇨🇳">
 
 <label>Título</label>
-<input id="tituloInput" placeholder="Título del informe">
+<input id="tituloInput">
 
 <label>Fecha</label>
 <input type="date" id="fecha">
 
 <label>Información</label>
-<textarea id="texto" placeholder="Escribe el informe..."></textarea>
+<textarea id="texto"></textarea>
 
 <label>Link de Imagen</label>
 <input id="imagen" placeholder="https://...">
 
 <button class="enviar" onclick="enviar()">SUBIR INFORME</button>
 
-<div class="log" id="log"></div>
+<div id="log"></div>
+
+</div>
 
 </div>
 
@@ -150,6 +180,8 @@ Sistema PDA | Red de Inteligencia
 import { initializeApp } from "https://www.gstatic.com/firebasejs/12.10.0/firebase-app.js";
 import { getDatabase, ref, push, onValue } from "https://www.gstatic.com/firebasejs/12.10.0/firebase-database.js";
 
+/* FIREBASE */
+
 const firebaseConfig = {
 
 apiKey: "AIzaSyCYfCPTM73h65iJ9HRW94rbRHYzwuqyXS0",
@@ -158,21 +190,78 @@ databaseURL: "https://world-of-hansa-default-rtdb.firebaseio.com",
 projectId: "world-of-hansa",
 storageBucket: "world-of-hansa.firebasestorage.app",
 messagingSenderId: "834898494569",
-appId: "1:834898494569:web:63f0869993e73bb01c4ef8",
-measurementId: "G-C0LNTV3RQZ"
+appId: "1:834898494569:web:63f0869993e73bb01c4ef8"
 
 };
 
 const app = initializeApp(firebaseConfig);
 const db = getDatabase(app);
 
-let categoriaActual = "militar";
+
+/* ANIMACIÓN DE ARRANQUE */
+
+const textoBoot = [
+"Inicializando PDA...",
+"Inicializando PDA New World of Hansa...",
+"Cargando módulos de inteligencia...",
+"Conectando a red global...",
+"Accediendo a base de datos...",
+"Welcome user***"
+];
+
+let linea = 0;
+let letra = 0;
+
+function escribir(){
+
+const bootText = document.getElementById("bootText");
+
+if(linea < textoBoot.length){
+
+if(letra < textoBoot[linea].length){
+
+bootText.innerHTML += textoBoot[linea].charAt(letra);
+
+letra++;
+
+setTimeout(escribir,40);
+
+}else{
+
+bootText.innerHTML += "<br>";
+
+linea++;
+letra=0;
+
+setTimeout(escribir,500);
+
+}
+
+}else{
+
+setTimeout(()=>{
+
+document.getElementById("boot").style.display="none";
+document.getElementById("pda").style.display="block";
+
+},800);
+
+}
+
+}
+
+escribir();
+
+
+/* PDA */
+
+let categoriaActual="militar";
 
 window.categoria = function(cat){
 
 categoriaActual = cat;
 
-document.getElementById("titulo").innerText = "Registro - " + cat;
+document.getElementById("titulo").innerText="Registro - "+cat;
 
 cargar();
 
@@ -208,7 +297,7 @@ document.getElementById("imagen").value="";
 
 function cargar(){
 
-const log = document.getElementById("log");
+const log=document.getElementById("log");
 
 onValue(ref(db,"pda/"+categoriaActual),(snapshot)=>{
 
@@ -216,13 +305,13 @@ log.innerHTML="";
 
 snapshot.forEach((child)=>{
 
-const data = child.val();
+const data=child.val();
 
-const div = document.createElement("div");
+const div=document.createElement("div");
 
 div.className="entry";
 
-div.innerHTML = `
+div.innerHTML=`
 
 <h3>${data.bandera || ""} ${data.titulo}</h3>
 
