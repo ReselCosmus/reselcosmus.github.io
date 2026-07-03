@@ -1,339 +1,789 @@
+
 <!DOCTYPE html>
-<html>
-
+<html lang="es">
 <head>
-
-<meta charset="UTF-8">
-<title>[༄𝐃𝐀𝐯𝐄❦] | A World of Hansa | Alt-GeoRP PDA</title>
-
-<style>
-
-body{
-background:#0b0f0e;
-color:#00ff9c;
-font-family:monospace;
-margin:0;
-}
-
-/* pantalla de carga */
-
-#boot{
-position:fixed;
-width:100%;
-height:100%;
-background:black;
-color:#00ff9c;
-display:flex;
-align-items:center;
-justify-content:center;
-font-size:18px;
-z-index:9999;
-}
-
-/* PDA */
-
-#pda{
-display:none;
-}
-
-header{
-background:#021d16;
-padding:15px;
-text-align:center;
-border-bottom:2px solid #00ff9c;
-}
-
-.container{
-display:flex;
-height:90vh;
-}
-
-.sidebar{
-width:240px;
-background:#031b15;
-border-right:1px solid #00ff9c;
-padding:10px;
-}
-
-.sidebar button{
-width:100%;
-margin-bottom:10px;
-padding:10px;
-background:black;
-color:#00ff9c;
-border:1px solid #00ff9c;
-cursor:pointer;
-}
-
-.main{
-flex:1;
-padding:20px;
-overflow:auto;
-}
-
-input, textarea{
-width:100%;
-background:black;
-color:#00ff9c;
-border:1px solid #00ff9c;
-padding:8px;
-margin-top:5px;
-font-family:monospace;
-}
-
-textarea{
-height:120px;
-}
-
-button.enviar{
-margin-top:10px;
-padding:10px;
-background:#00ff9c;
-border:none;
-color:black;
-font-weight:bold;
-cursor:pointer;
-}
-
-.entry{
-border-bottom:1px solid #00ff9c33;
-padding:10px;
-margin-bottom:20px;
-}
-
-.entry img{
-max-width:350px;
-margin-top:10px;
-border:1px solid #00ff9c;
-}
-
-.time{
-font-size:12px;
-color:#00ffaa88;
-}
-
-</style>
-
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Minería Galáctica</title>
+  <!-- Estilos embebidos -->
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body { font-family: 'Segoe UI', Tahoma, sans-serif; background: #0b0e14; color: #e0e6ed; padding: 20px; }
+    .container { max-width: 1000px; margin: 0 auto; }
+    .hidden { display: none !important; }
+    header { display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid #2a3a4a; padding-bottom: 10px; margin-bottom: 20px; }
+    .btn { background: #2a4a6a; border: none; color: white; padding: 8px 18px; border-radius: 6px; cursor: pointer; transition: 0.2s; }
+    .btn:hover { background: #3a6a8a; }
+    .btn-danger { background: #8a2a2a; }
+    .btn-danger:hover { background: #aa3a3a; }
+    .btn-success { background: #2a7a4a; }
+    .btn-success:hover { background: #3a9a5a; }
+    .card { background: #1a222c; border-radius: 12px; padding: 20px; margin-bottom: 20px; border: 1px solid #2a3a4a; }
+    .card h2 { margin-bottom: 12px; color: #b0c8e0; }
+    .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 12px; }
+    .station-box { background: #0f171f; border-radius: 8px; padding: 12px; border: 1px solid #2a4a5a; }
+    .station-box .label { font-weight: bold; color: #8aaccc; }
+    .station-box .cooldown { color: #f0a030; font-size: 0.9em; }
+    .station-box .reclamar-btn { margin-top: 8px; }
+    .mineral-list { display: flex; flex-wrap: wrap; gap: 4px 12px; font-size: 0.95em; }
+    .admin-panel { background: #1a1a2a; border: 1px solid #5a4a6a; }
+    .admin-panel input, .admin-panel select { background: #2a2a3a; color: white; border: 1px solid #4a4a5a; padding: 6px; border-radius: 4px; }
+    .flex { display: flex; gap: 12px; flex-wrap: wrap; align-items: center; }
+    .mt-10 { margin-top: 10px; }
+    .mb-10 { margin-bottom: 10px; }
+    .text-center { text-align: center; }
+    .badge { background: #2a4a5a; padding: 2px 10px; border-radius: 30px; font-size: 0.8em; }
+    .toast { position: fixed; bottom: 20px; right: 20px; background: #1a2a2a; border: 1px solid #4a7a7a; padding: 12px 24px; border-radius: 8px; z-index: 999; }
+  </style>
 </head>
-
 <body>
 
-<!-- pantalla de arranque -->
+<div id="app" class="container">
+  <!-- HEADER -->
+  <header>
+    <h1>🪐 Minería Galáctica</h1>
+    <div id="user-info">
+      <span id="user-name"></span>
+      <button id="logout-btn" class="btn btn-danger">Cerrar sesión</button>
+    </div>
+  </header>
 
-<div id="boot">
-<span id="bootText"></span>
+  <!-- VISTA DE LOGIN -->
+  <div id="login-view" class="text-center" style="margin-top: 60px;">
+    <h2>Accede con tu cuenta Google</h2>
+    <button id="login-btn" class="btn btn-success" style="font-size: 1.4rem; padding: 12px 40px;">🚀 Iniciar sesión</button>
+  </div>
+
+  <!-- VISTA PRINCIPAL (autenticado) -->
+  <div id="main-view" class="hidden">
+    <!-- Navegación -->
+    <div class="flex mb-10">
+      <button class="btn" data-view="dashboard">📋 Mis Sistemas</button>
+      <button class="btn" data-view="inventory">📦 Inventario</button>
+      <button id="admin-btn" class="btn btn-danger hidden" data-view="admin">🔧 Admin</button>
+    </div>
+
+    <!-- DASHBOARD -->
+    <div id="dashboard-view">
+      <div class="flex" style="justify-content: space-between;">
+        <h2>🌌 Sistemas Mineros</h2>
+        <button id="create-system-btn" class="btn btn-success">+ Nuevo Sistema</button>
+      </div>
+      <div id="systems-list" class="grid"></div>
+    </div>
+
+    <!-- INVENTARIO -->
+    <div id="inventory-view" class="hidden">
+      <h2>📦 Inventario de <span id="inv-user-name"></span></h2>
+      <div class="card">
+        <div><strong>Créditos:</strong> <span id="inv-credits">0</span> cr</div>
+        <div id="inv-minerals" class="mineral-list"></div>
+      </div>
+    </div>
+
+    <!-- ADMIN -->
+    <div id="admin-view" class="hidden admin-panel card">
+      <h2>🔧 Panel de Administración</h2>
+      <p>Busca un usuario por UID o email para editar su inventario.</p>
+      <div class="flex">
+        <input type="text" id="admin-search" placeholder="UID o email" style="flex:1;" />
+        <button id="admin-search-btn" class="btn">Buscar</button>
+      </div>
+      <div id="admin-result" class="mt-10"></div>
+    </div>
+
+    <!-- VISTA DE SISTEMA (detalle) -->
+    <div id="system-view" class="hidden">
+      <button id="back-to-dashboard" class="btn mb-10">⬅ Volver</button>
+      <h2 id="system-name-title"></h2>
+      <p><span class="badge">Dueño: <span id="system-owner"></span></span></p>
+      <div id="stations-container" class="grid"></div>
+    </div>
+  </div>
 </div>
 
-
-<!-- PDA -->
-
-<div id="pda">
-
-<header>
-<h2>[༄𝐃𝐀𝐯𝐄❦] | A World of Hansa | Alt-GeoRP</h2>
-Sistema PDA | Red de Inteligencia Global
-</header>
-
-<div class="container">
-
-<div class="sidebar">
-
-<button onclick="categoria('militar')">Militar</button>
-<button onclick="categoria('politica')">Política</button>
-<button onclick="categoria('inteligencia')">Inteligencia</button>
-<button onclick="categoria('economia')">Economía</button>
-
-</div>
-
-<div class="main">
-
-<h2 id="titulo">Registro</h2>
-
-<label>Bandera (emoji)</label>
-<input id="bandera" placeholder="🇺🇸 🇷🇺 🇨🇳">
-
-<label>Título</label>
-<input id="tituloInput">
-
-<label>Fecha</label>
-<input type="date" id="fecha">
-
-<label>Información</label>
-<textarea id="texto"></textarea>
-
-<label>Link de Imagen</label>
-<input id="imagen" placeholder="https://...">
-
-<button class="enviar" onclick="enviar()">SUBIR INFORME</button>
-
-<div id="log"></div>
-
-</div>
-
-</div>
-
-</div>
-
-
-<script type="module">
-
-import { initializeApp } from "https://www.gstatic.com/firebasejs/12.10.0/firebase-app.js";
-import { getDatabase, ref, push, onValue } from "https://www.gstatic.com/firebasejs/12.10.0/firebase-database.js";
-
-/* FIREBASE */
-
-const firebaseConfig = {
-
-apiKey: "AIzaSyCYfCPTM73h65iJ9HRW94rbRHYzwuqyXS0",
-authDomain: "world-of-hansa.firebaseapp.com",
-databaseURL: "https://world-of-hansa-default-rtdb.firebaseio.com",
-projectId: "world-of-hansa",
-storageBucket: "world-of-hansa.firebasestorage.app",
-messagingSenderId: "834898494569",
-appId: "1:834898494569:web:63f0869993e73bb01c4ef8"
-
-};
-
-const app = initializeApp(firebaseConfig);
-const db = getDatabase(app);
-
-
-/* ANIMACIÓN DE ARRANQUE */
-
-const textoBoot = [
-"Inicializando PDA...",
-"Inicializando PDA New World of Hansa...",
-"Cargando módulos de inteligencia...",
-"Conectando a red global...",
-"Accediendo a base de datos...",
-"|Bienivenido Querido usuarios, disfruta de experiencia...|"
-];
-
-let linea = 0;
-let letra = 0;
-
-function escribir(){
-
-const bootText = document.getElementById("bootText");
-
-if(linea < textoBoot.length){
-
-if(letra < textoBoot[linea].length){
-
-bootText.innerHTML += textoBoot[linea].charAt(letra);
-
-letra++;
-
-setTimeout(escribir,40);
-
-}else{
-
-bootText.innerHTML += "<br>";
-
-linea++;
-letra=0;
-
-setTimeout(escribir,500);
-
-}
-
-}else{
-
-setTimeout(()=>{
-
-document.getElementById("boot").style.display="none";
-document.getElementById("pda").style.display="block";
-
-},800);
-
-}
-
-}
-
-escribir();
-
-
-/* PDA */
-
-let categoriaActual="militar";
-
-window.categoria = function(cat){
-
-categoriaActual = cat;
-
-document.getElementById("titulo").innerText="Registro - "+cat;
-
-cargar();
-
-}
-
-window.enviar = function(){
-
-const bandera = document.getElementById("bandera").value;
-const titulo = document.getElementById("tituloInput").value;
-const fecha = document.getElementById("fecha").value;
-const texto = document.getElementById("texto").value;
-const imagen = document.getElementById("imagen").value;
-
-if(titulo.trim()=="" || texto.trim()=="") return;
-
-push(ref(db,"pda/"+categoriaActual),{
-
-bandera,
-titulo,
-fecha,
-texto,
-imagen
-
-});
-
-document.getElementById("bandera").value="";
-document.getElementById("tituloInput").value="";
-document.getElementById("fecha").value="";
-document.getElementById("texto").value="";
-document.getElementById("imagen").value="";
-
-}
-
-function cargar(){
-
-const log=document.getElementById("log");
-
-onValue(ref(db,"pda/"+categoriaActual),(snapshot)=>{
-
-log.innerHTML="";
-
-snapshot.forEach((child)=>{
-
-const data=child.val();
-
-const div=document.createElement("div");
-
-div.className="entry";
-
-div.innerHTML=`
-
-<h3>${data.bandera || ""} ${data.titulo}</h3>
-
-<div class="time">${data.fecha || ""}</div>
-
-<p>${data.texto}</p>
-
-${data.imagen ? `<img src="${data.imagen}">` : ""}
-
-`;
-
-log.prepend(div);
-
-});
-
-});
-
-}
-
-cargar();
-
+<!-- Toast de notificaciones -->
+<div id="toast" class="toast hidden"></div>
+
+<!-- Firebase SDK y lógica -->
+<script type="importmap">
+  {
+    "imports": {
+      "firebase-app": "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js",
+      "firebase-auth": "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js",
+      "firebase-firestore": "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js"
+    }
+  }
 </script>
 
+<script type="module">
+  // ============================================================
+  //  IMPORTS
+  // ============================================================
+  import { initializeApp } from "firebase-app";
+  import { getAuth, signInWithPopup, GoogleAuthProvider, onAuthStateChanged, signOut } from "firebase-auth";
+  import { getFirestore, doc, getDoc, setDoc, updateDoc, deleteDoc, collection, query, where, getDocs, addDoc, serverTimestamp, increment, runTransaction, arrayUnion, arrayRemove, onSnapshot } from "firebase-firestore";
+
+  // Configuración de Firebase (cámbiala por la tuya)
+  const firebaseConfig = {
+  apiKey: "AIzaSyD6SfEzCKeRFOSbzU8bW3XFZGPko4CNw8c",
+  authDomain: "sistema-de-mineria-a33ad.firebaseapp.com",
+  projectId: "sistema-de-mineria-a33ad",
+  storageBucket: "sistema-de-mineria-a33ad.firebasestorage.app",
+  messagingSenderId: "1018786057278",
+  appId: "1:1018786057278:web:753bcc3084c5c17ab1956f",
+  measurementId: "G-8BZ71NCMX6"
+  };
+
+  const app = initializeApp(firebaseConfig);
+  const auth = getAuth(app);
+  const db = getFirestore(app);
+
+  // ============================================================
+  //  CONSTANTES
+  // ============================================================
+  const MINERALES = {
+    comunes: ["Lommite", "Agrinium", "Cerulite", "Kelshite", "Ardanium"],
+    pocoComunes: ["Mineral de Doonium", "Mineral de Quadranium", "Mineral de Duranium", "Mineral de Hibridium", "Mineral de Gallinore", "Mineral de Meleenium"],
+    raros: ["Mineral de neuranio", "Mineral de ultracromo", "Mineral de bondita", "Mineral de ionita", "Mineral de Hays", "Mineral de zersio"],
+    muyRaros: ["Phrik Ore", "Impervium Ore", "Beskar Ore", "Ultrasteel Ore", "Songsteel Ore", "Hibreanium Prime Ore"],
+    epicos: ["Mineral de Cortosis", "Mineral de Estigio", "Depósitos de neutronio", "Zersium Prime", "Venas puras de Phrik"],
+    legendarios: ["Vena pura de Beskar", "Cortosis primordial", "Mineral celestial", "Mineral hiperdenso de Rakatan"]
+  };
+  const PRECIOS = {};
+  [...MINERALES.comunes, ...MINERALES.pocoComunes, ...MINERALES.raros, ...MINERALES.muyRaros, ...MINERALES.epicos, ...MINERALES.legendarios].forEach((m, i) => {
+    if (i < 5) PRECIOS[m] = 120;
+    else if (i < 11) PRECIOS[m] = 350;
+    else if (i < 17) PRECIOS[m] = 900;
+    else if (i < 23) PRECIOS[m] = 2500;
+    else if (i < 28) PRECIOS[m] = 7500;
+    else PRECIOS[m] = 20000;
+  });
+
+  const RAREZA_TAG = {
+    "Lommite": "🟢 Común", "Agrinium": "🟢 Común", "Cerulite": "🟢 Común", "Kelshite": "🟢 Común", "Ardanium": "🟢 Común",
+    "Mineral de Doonium": "🔵 Poco común", "Mineral de Quadranium": "🔵 Poco común", "Mineral de Duranium": "🔵 Poco común",
+    "Mineral de Hibridium": "🔵 Poco común", "Mineral de Gallinore": "🔵 Poco común", "Mineral de Meleenium": "🔵 Poco común",
+    "Mineral de neuranio": "🟣 Raro", "Mineral de ultracromo": "🟣 Raro", "Mineral de bondita": "🟣 Raro",
+    "Mineral de ionita": "🟣 Raro", "Mineral de Hays": "🟣 Raro", "Mineral de zersio": "🟣 Raro",
+    "Phrik Ore": "🔴 Muy raro", "Impervium Ore": "🔴 Muy raro", "Beskar Ore": "🔴 Muy raro",
+    "Ultrasteel Ore": "🔴 Muy raro", "Songsteel Ore": "🔴 Muy raro", "Hibreanium Prime Ore": "🔴 Muy raro",
+    "Mineral de Cortosis": "🟠 Épico", "Mineral de Estigio": "🟠 Épico", "Depósitos de neutronio": "🟠 Épico",
+    "Zersium Prime": "🟠 Épico", "Venas puras de Phrik": "🟠 Épico",
+    "Vena pura de Beskar": "🟡 Legendario", "Cortosis primordial": "🟡 Legendario",
+    "Mineral celestial": "🟡 Legendario", "Mineral hiperdenso de Rakatan": "🟡 Legendario"
+  };
+
+  const SECTORES = [
+    { prob: 20, nombre: "🔴 Hiper-Vacío", mult: 0.3 },
+    { prob: 50, nombre: "🟢 Estándar", mult: 1.0 },
+    { prob: 23, nombre: "🔵 Sistema Rico", mult: 1.8 },
+    { prob: 7, nombre: "🔥 Filón Galáctico", mult: 3.2 }
+  ];
+
+  // ============================================================
+  //  UTILIDADES
+  // ============================================================
+  function randomInt(min, max) { return Math.floor(Math.random() * (max - min + 1)) + min; }
+
+  function pickRandom(arr) { return arr[Math.floor(Math.random() * arr.length)]; }
+
+  function weightedRandom() {
+    const r = Math.random() * 100;
+    if (r < 72) return { mineral: pickRandom(MINERALES.comunes), rareza: "comun" };
+    else if (r < 90) return { mineral: pickRandom(MINERALES.pocoComunes), rareza: "pocoComun" };
+    else if (r < 97) return { mineral: pickRandom(MINERALES.raros), rareza: "raro" };
+    else if (r < 99) return { mineral: pickRandom(MINERALES.muyRaros), rareza: "muyRaro" };
+    else if (r < 99.8) return { mineral: pickRandom(MINERALES.epicos), rareza: "epico" };
+    else return { mineral: pickRandom(MINERALES.legendarios), rareza: "legendario" };
+  }
+
+  function elegirSector() {
+    const r = Math.random() * 100;
+    let acum = 0;
+    for (const sec of SECTORES) {
+      acum += sec.prob;
+      if (r < acum) return sec;
+    }
+    return SECTORES[1]; // fallback
+  }
+
+  function generarMinado() {
+    const sector = elegirSector();
+    const mult = sector.mult;
+    const resultados = [];
+    for (let i = 0; i < 3; i++) {
+      const w = weightedRandom();
+      const base = randomInt(50, 500); // base para cada mineral
+      const cantidad = Math.round(base * mult);
+      resultados.push({ mineral: w.mineral, cantidad, rareza: w.rareza });
+    }
+    return { sector, resultados };
+  }
+
+  function calcularCreditos(resultados) {
+    let total = 0;
+    for (const r of resultados) {
+      total += r.cantidad * (PRECIOS[r.mineral] || 0);
+    }
+    return total;
+  }
+
+  // ============================================================
+  //  ESTADO GLOBAL
+  // ============================================================
+  let currentUser = null;
+  let currentUserData = null;
+  let currentSystemId = null;
+
+  // ============================================================
+  //  REFERENCIAS DOM
+  // ============================================================
+  const $ = (sel) => document.querySelector(sel);
+  const $$ = (sel) => document.querySelectorAll(sel);
+
+  const loginView = $('#login-view');
+  const mainView = $('#main-view');
+  const userName = $('#user-name');
+  const logoutBtn = $('#logout-btn');
+  const loginBtn = $('#login-btn');
+  const dashboardView = $('#dashboard-view');
+  const inventoryView = $('#inventory-view');
+  const adminView = $('#admin-view');
+  const systemView = $('#system-view');
+  const systemsList = $('#systems-list');
+  const invCredits = $('#inv-credits');
+  const invMinerals = $('#inv-minerals');
+  const invUserName = $('#inv-user-name');
+  const createSystemBtn = $('#create-system-btn');
+  const backToDashboard = $('#back-to-dashboard');
+  const systemNameTitle = $('#system-name-title');
+  const systemOwner = $('#system-owner');
+  const stationsContainer = $('#stations-container');
+  const adminBtn = $('#admin-btn');
+  const adminSearch = $('#admin-search');
+  const adminSearchBtn = $('#admin-search-btn');
+  const adminResult = $('#admin-result');
+  const toast = $('#toast');
+
+  // ============================================================
+  //  NAVEGACIÓN ENTRE VISTAS
+  // ============================================================
+  function showView(viewId) {
+    $$('#dashboard-view, #inventory-view, #admin-view, #system-view').forEach(el => el.classList.add('hidden'));
+    const target = document.getElementById(viewId);
+    if (target) target.classList.remove('hidden');
+  }
+
+  // Botones de navegación
+  document.querySelectorAll('[data-view]').forEach(btn => {
+    btn.addEventListener('click', () => {
+      const view = btn.dataset.view;
+      if (view === 'dashboard') { showView('dashboard-view'); loadSystems(); }
+      else if (view === 'inventory') { showView('inventory-view'); loadInventory(); }
+      else if (view === 'admin') { showView('admin-view'); }
+    });
+  });
+
+  backToDashboard.addEventListener('click', () => {
+    showView('dashboard-view');
+    loadSystems();
+  });
+
+  // ============================================================
+  //  AUTENTICACIÓN
+  // ============================================================
+  async function login() {
+    try {
+      const provider = new GoogleAuthProvider();
+      const result = await signInWithPopup(auth, provider);
+      const user = result.user;
+      await registerUser(user);
+      currentUser = user;
+      loadUserData();
+    } catch (err) {
+      showToast('Error al iniciar sesión: ' + err.message);
+    }
+  }
+
+  async function registerUser(user) {
+    const userRef = doc(db, 'users', user.uid);
+    const snap = await getDoc(userRef);
+    if (!snap.exists()) {
+      await setDoc(userRef, {
+        displayName: user.displayName || user.email,
+        email: user.email,
+        role: 'user',
+        createdAt: serverTimestamp()
+      });
+    }
+  }
+
+  function logout() {
+    signOut(auth);
+    currentUser = null;
+    currentUserData = null;
+    loginView.classList.remove('hidden');
+    mainView.classList.add('hidden');
+  }
+
+  onAuthStateChanged(auth, async (user) => {
+    if (user) {
+      currentUser = user;
+      loginView.classList.add('hidden');
+      mainView.classList.remove('hidden');
+      await loadUserData();
+      loadSystems();
+    } else {
+      loginView.classList.remove('hidden');
+      mainView.classList.add('hidden');
+    }
+  });
+
+  loginBtn.addEventListener('click', login);
+  logoutBtn.addEventListener('click', logout);
+
+  async function loadUserData() {
+    if (!currentUser) return;
+    const userRef = doc(db, 'users', currentUser.uid);
+    const snap = await getDoc(userRef);
+    if (snap.exists()) {
+      currentUserData = snap.data();
+      userName.textContent = currentUserData.displayName || currentUser.email;
+      if (currentUserData.role === 'admin') {
+        adminBtn.classList.remove('hidden');
+      } else {
+        adminBtn.classList.add('hidden');
+      }
+    }
+  }
+
+  // ============================================================
+  //  TOAST NOTIFICATIONS
+  // ============================================================
+  function showToast(msg, duration = 4000) {
+    toast.textContent = msg;
+    toast.classList.remove('hidden');
+    clearTimeout(toast._timer);
+    toast._timer = setTimeout(() => toast.classList.add('hidden'), duration);
+  }
+
+  // ============================================================
+  //  SISTEMAS (CRUD)
+  // ============================================================
+  async function loadSystems() {
+    if (!currentUser) return;
+    try {
+      const q = query(collection(db, 'systems'), where('owner', '==', currentUser.uid));
+      const querySnapshot = await getDocs(q);
+      systemsList.innerHTML = '';
+      if (querySnapshot.empty) {
+        systemsList.innerHTML = '<p>No tienes sistemas aún. Crea uno nuevo.</p>';
+        return;
+      }
+      querySnapshot.forEach(doc => {
+        const data = doc.data();
+        const card = document.createElement('div');
+        card.className = 'card';
+        const stationsCount = data.stations ? Object.keys(data.stations).length : 0;
+        card.innerHTML = `
+          <h3>🌌 ${data.name}</h3>
+          <p>Estaciones: ${stationsCount}/5</p>
+          <button class="btn ver-sistema" data-id="${doc.id}">Ver</button>
+          <button class="btn btn-danger eliminar-sistema" data-id="${doc.id}">Eliminar</button>
+        `;
+        systemsList.appendChild(card);
+      });
+      // Eventos
+      document.querySelectorAll('.ver-sistema').forEach(btn => {
+        btn.addEventListener('click', () => openSystem(btn.dataset.id));
+      });
+      document.querySelectorAll('.eliminar-sistema').forEach(btn => {
+        btn.addEventListener('click', async () => {
+          if (confirm('¿Eliminar este sistema y todas sus estaciones?')) {
+            await deleteDoc(doc(db, 'systems', btn.dataset.id));
+            loadSystems();
+            showToast('Sistema eliminado.');
+          }
+        });
+      });
+    } catch (err) {
+      showToast('Error al cargar sistemas: ' + err.message);
+    }
+  }
+
+  createSystemBtn.addEventListener('click', async () => {
+    const name = prompt('Nombre del nuevo sistema (único):');
+    if (!name) return;
+    try {
+      // Verificar unicidad
+      const q = query(collection(db, 'systems'), where('name', '==', name));
+      const snap = await getDocs(q);
+      if (!snap.empty) {
+        showToast('Ya existe un sistema con ese nombre.');
+        return;
+      }
+      await addDoc(collection(db, 'systems'), {
+        name: name,
+        owner: currentUser.uid,
+        stations: {},
+        createdAt: serverTimestamp()
+      });
+      loadSystems();
+      showToast('Sistema creado.');
+    } catch (err) {
+      showToast('Error: ' + err.message);
+    }
+  });
+
+  // ============================================================
+  //  ABRIR SISTEMA (detalle de estaciones)
+  // ============================================================
+  async function openSystem(systemId) {
+    currentSystemId = systemId;
+    try {
+      const docRef = doc(db, 'systems', systemId);
+      const snap = await getDoc(docRef);
+      if (!snap.exists()) { showToast('Sistema no encontrado.'); return; }
+      const data = snap.data();
+      systemNameTitle.textContent = `🌌 ${data.name}`;
+      systemOwner.textContent = data.owner;
+      showView('system-view');
+      renderStations(systemId, data.stations || {});
+    } catch (err) {
+      showToast('Error al abrir sistema: ' + err.message);
+    }
+  }
+
+  // ============================================================
+  //  RENDER ESTACIONES
+  // ============================================================
+  function renderStations(systemId, stations) {
+    stationsContainer.innerHTML = '';
+    const stationKeys = Object.keys(stations).sort((a,b) => parseInt(a)-parseInt(b));
+    // Mostrar las 5 posiciones
+    for (let i = 1; i <= 5; i++) {
+      const idx = i.toString();
+      const box = document.createElement('div');
+      box.className = 'station-box';
+      const hasStation = stationKeys.includes(idx);
+      const stationData = hasStation ? stations[idx] : null;
+
+      let html = `<div class="label">Estación #${idx}</div>`;
+      if (hasStation && stationData) {
+        // Mostrar recursos en la estación
+        const entries = Object.entries(stationData).filter(([k]) => k !== 'cr');
+        let list = '';
+        for (const [mineral, cant] of entries) {
+          if (cant > 0) list += `<span>${mineral}: ${cant} OU</span> `;
+        }
+        const cr = stationData.cr || 0;
+        html += `<div class="mineral-list">${list || 'Vacía'}</div>`;
+        html += `<div>💰 ${cr} cr</div>`;
+        // Botón minar
+        html += `<button class="btn btn-success minar-btn" data-system="${systemId}" data-station="${idx}" style="margin-top:6px;">⛏️ Minar</button>`;
+        // Botón reclamar (con cooldown)
+        html += `<button class="btn reclamar-btn" data-system="${systemId}" data-station="${idx}" style="margin-top:6px;">📦 Reclamar</button>`;
+        // Mostrar cooldown si existe
+        html += `<div class="cooldown" id="cd-${systemId}-${idx}"></div>`;
+      } else {
+        html += `<div style="color:#666;">Vacía</div>`;
+        // Botón para agregar estación (solo si hay menos de 5)
+        if (stationKeys.length < 5) {
+          html += `<button class="btn agregar-estacion" data-system="${systemId}" data-station="${idx}">➕ Agregar</button>`;
+        }
+      }
+      box.innerHTML = html;
+      stationsContainer.appendChild(box);
+    }
+
+    // Eventos
+    document.querySelectorAll('.agregar-estacion').forEach(btn => {
+      btn.addEventListener('click', async () => {
+        const sysId = btn.dataset.system;
+        const stationIdx = btn.dataset.station;
+        await agregarEstacion(sysId, stationIdx);
+      });
+    });
+
+    document.querySelectorAll('.minar-btn').forEach(btn => {
+      btn.addEventListener('click', async () => {
+        const sysId = btn.dataset.system;
+        const stationIdx = btn.dataset.station;
+        await minarEstacion(sysId, stationIdx);
+      });
+    });
+
+    document.querySelectorAll('.reclamar-btn').forEach(btn => {
+      btn.addEventListener('click', async () => {
+        const sysId = btn.dataset.system;
+        const stationIdx = btn.dataset.station;
+        await reclamarEstacion(sysId, stationIdx);
+      });
+    });
+
+    // Verificar cooldowns al cargar
+    for (const idx of stationKeys) {
+      checkCooldown(systemId, idx);
+    }
+  }
+
+  // ============================================================
+  //  AGREGAR ESTACIÓN
+  // ============================================================
+  async function agregarEstacion(systemId, stationIdx) {
+    try {
+      const sysRef = doc(db, 'systems', systemId);
+      await updateDoc(sysRef, {
+        [`stations.${stationIdx}`]: { cr: 0 }
+      });
+      showToast(`Estación #${stationIdx} agregada.`);
+      openSystem(systemId);
+    } catch (err) {
+      showToast('Error al agregar estación: ' + err.message);
+    }
+  }
+
+  // ============================================================
+  //  MINAR ESTACIÓN
+  // ============================================================
+  async function minarEstacion(systemId, stationIdx) {
+    try {
+      // Generar recursos
+      const { sector, resultados } = generarMinado();
+      const creditos = calcularCreditos(resultados);
+
+      // Construir objeto de actualización
+      const updateObj = {};
+      for (const r of resultados) {
+        const key = `stations.${stationIdx}.${r.mineral}`;
+        updateObj[key] = increment(r.cantidad);
+      }
+      updateObj[`stations.${stationIdx}.cr`] = increment(creditos);
+
+      const sysRef = doc(db, 'systems', systemId);
+      await updateDoc(sysRef, updateObj);
+
+      // Mostrar resumen en toast
+      let msg = `⛏️ Minado en Estación #${stationIdx} (${sector.nombre}): `;
+      for (const r of resultados) {
+        msg += `${r.mineral} +${r.cantidad} OU, `;
+      }
+      msg += `💰 +${creditos} cr`;
+      showToast(msg);
+
+      // Recargar vista
+      openSystem(systemId);
+    } catch (err) {
+      showToast('Error al minar: ' + err.message);
+    }
+  }
+
+  // ============================================================
+  //  RECLAMAR ESTACIÓN (con cooldown de 24h)
+  // ============================================================
+  async function reclamarEstacion(systemId, stationIdx) {
+    if (!currentUser) return;
+    try {
+      // Verificar cooldown
+      const cdRef = doc(db, 'cooldowns', `${currentUser.uid}_${systemId}_${stationIdx}`);
+      const cdSnap = await getDoc(cdRef);
+      if (cdSnap.exists()) {
+        const next = cdSnap.data().nextClaimTime?.toMillis?.() || 0;
+        if (Date.now() < next) {
+          const remaining = Math.ceil((next - Date.now()) / 3600000);
+          showToast(`⏳ Cooldown: espera ${remaining} horas.`);
+          return;
+        }
+      }
+
+      // Obtener datos de la estación
+      const sysRef = doc(db, 'systems', systemId);
+      const sysSnap = await getDoc(sysRef);
+      if (!sysSnap.exists()) { showToast('Sistema no encontrado.'); return; }
+      const data = sysSnap.data();
+      const stationData = data.stations?.[stationIdx];
+      if (!stationData || Object.keys(stationData).length === 0) {
+        showToast('Estación vacía.');
+        return;
+      }
+
+      // Extraer recursos
+      const recursos = {};
+      let creditos = 0;
+      for (const [key, val] of Object.entries(stationData)) {
+        if (key === 'cr') creditos = val;
+        else if (val > 0) recursos[key] = val;
+      }
+      if (Object.keys(recursos).length === 0 && creditos === 0) {
+        showToast('No hay nada que reclamar.');
+        return;
+      }
+
+      // Mover al inventario del usuario
+      const invRef = doc(db, 'inventory', currentUser.uid);
+      const invSnap = await getDoc(invRef);
+      let invData = invSnap.exists() ? invSnap.data() : { cr: 0 };
+      // Sumar
+      const updates = {};
+      for (const [mineral, cant] of Object.entries(recursos)) {
+        updates[mineral] = increment(cant);
+      }
+      updates.cr = increment(creditos);
+      // Si no existe el documento, lo creamos
+      if (!invSnap.exists()) {
+        await setDoc(invRef, { cr: 0 });
+      }
+      await updateDoc(invRef, updates);
+
+      // Limpiar estación (poner a 0)
+      const clearObj = {};
+      for (const key of Object.keys(stationData)) {
+        clearObj[`stations.${stationIdx}.${key}`] = 0;
+      }
+      await updateDoc(sysRef, clearObj);
+
+      // Guardar cooldown (24h)
+      const nextClaim = new Date(Date.now() + 24 * 60 * 60 * 1000);
+      await setDoc(cdRef, {
+        uid: currentUser.uid,
+        systemId: systemId,
+        stationIndex: parseInt(stationIdx),
+        nextClaimTime: nextClaim
+      });
+
+      showToast(`✅ Reclamado: ${Object.keys(recursos).length} tipos de mineral y ${creditos} cr.`);
+      openSystem(systemId);
+    } catch (err) {
+      showToast('Error al reclamar: ' + err.message);
+    }
+  }
+
+  // ============================================================
+  //  CHECK COOLDOWN (actualizar visualización)
+  // ============================================================
+  async function checkCooldown(systemId, stationIdx) {
+    const cdRef = doc(db, 'cooldowns', `${currentUser.uid}_${systemId}_${stationIdx}`);
+    const snap = await getDoc(cdRef);
+    const el = document.getElementById(`cd-${systemId}-${stationIdx}`);
+    if (!el) return;
+    if (snap.exists()) {
+      const next = snap.data().nextClaimTime?.toMillis?.() || 0;
+      if (Date.now() < next) {
+        const remaining = Math.ceil((next - Date.now()) / 3600000);
+        el.textContent = `⏳ Cooldown: ${remaining}h`;
+      } else {
+        el.textContent = '✅ Disponible';
+      }
+    } else {
+      el.textContent = '✅ Disponible';
+    }
+  }
+
+  // ============================================================
+  //  INVENTARIO
+  // ============================================================
+  async function loadInventory() {
+    if (!currentUser) return;
+    try {
+      const invRef = doc(db, 'inventory', currentUser.uid);
+      const snap = await getDoc(invRef);
+      const data = snap.exists() ? snap.data() : { cr: 0 };
+      invCredits.textContent = data.cr || 0;
+      invUserName.textContent = currentUserData?.displayName || currentUser.email;
+      // Mostrar minerales
+      const mineralKeys = Object.keys(data).filter(k => k !== 'cr' && data[k] > 0);
+      invMinerals.innerHTML = '';
+      if (mineralKeys.length === 0) {
+        invMinerals.innerHTML = '<span style="color:#666;">No tienes minerales.</span>';
+      } else {
+        for (const key of mineralKeys) {
+          const span = document.createElement('span');
+          const rareza = RAREZA_TAG[key] || '⚪ Desconocido';
+          span.textContent = `${rareza} ${key}: ${data[key]} OU`;
+          invMinerals.appendChild(span);
+        }
+      }
+    } catch (err) {
+      showToast('Error al cargar inventario: ' + err.message);
+    }
+  }
+
+  // ============================================================
+  //  ADMIN: BUSCAR USUARIO Y EDITAR INVENTARIO
+  // ============================================================
+  adminSearchBtn.addEventListener('click', async () => {
+    const queryText = adminSearch.value.trim();
+    if (!queryText) { showToast('Escribe un UID o email.'); return; }
+    try {
+      let uid = queryText;
+      // Si es email, buscar en users
+      if (queryText.includes('@')) {
+        const q = query(collection(db, 'users'), where('email', '==', queryText));
+        const snap = await getDocs(q);
+        if (snap.empty) { adminResult.innerHTML = 'Usuario no encontrado.'; return; }
+        uid = snap.docs[0].id;
+      }
+      // Obtener datos del usuario
+      const userRef = doc(db, 'users', uid);
+      const userSnap = await getDoc(userRef);
+      if (!userSnap.exists()) { adminResult.innerHTML = 'Usuario no encontrado.'; return; }
+      const userData = userSnap.data();
+
+      // Obtener inventario
+      const invRef = doc(db, 'inventory', uid);
+      const invSnap = await getDoc(invRef);
+      const invData = invSnap.exists() ? invSnap.data() : { cr: 0 };
+
+      // Mostrar formulario de edición
+      let html = `
+        <div class="card">
+          <h3>${userData.displayName || userData.email} (${uid})</h3>
+          <p><strong>Créditos:</strong> <input type="number" id="admin-cr" value="${invData.cr || 0}" /></p>
+          <p><strong>Minerales (nombre:cantidad, separados por coma):</strong></p>
+          <textarea id="admin-minerals" rows="4" style="width:100%;">${Object.entries(invData).filter(([k]) => k !== 'cr').map(([k,v]) => `${k}:${v}`).join(',\n')}</textarea>
+          <button id="admin-save-inv" class="btn btn-success mt-10">Guardar cambios</button>
+          <button id="admin-delete-inv" class="btn btn-danger mt-10">Eliminar inventario (poner a 0)</button>
+        </div>
+      `;
+      adminResult.innerHTML = html;
+
+      document.getElementById('admin-save-inv').addEventListener('click', async () => {
+        const newCr = parseInt(document.getElementById('admin-cr').value) || 0;
+        const mineralsText = document.getElementById('admin-minerals').value;
+        const lines = mineralsText.split(',').map(s => s.trim()).filter(Boolean);
+        const newMinerals = {};
+        for (const line of lines) {
+          const [name, qty] = line.split(':').map(s => s.trim());
+          if (name && qty) newMinerals[name] = parseInt(qty) || 0;
+        }
+        // Actualizar
+        const updateData = { cr: newCr, ...newMinerals };
+        await setDoc(invRef, updateData);
+        showToast('Inventario actualizado.');
+        // Recargar vista admin
+        adminSearchBtn.click();
+      });
+
+      document.getElementById('admin-delete-inv').addEventListener('click', async () => {
+        if (confirm('¿Eliminar todo el inventario de este usuario?')) {
+          await setDoc(invRef, { cr: 0 });
+          showToast('Inventario eliminado.');
+          adminSearchBtn.click();
+        }
+      });
+
+    } catch (err) {
+      showToast('Error en búsqueda: ' + err.message);
+    }
+  });
+
+  // ============================================================
+  //  INICIO: cargar datos si ya autenticado
+  // ============================================================
+  // (El onAuthStateChanged ya maneja la carga)
+
+  console.log('🪐 Mining Galaxy Web cargado.');
+</script>
 </body>
 </html>
